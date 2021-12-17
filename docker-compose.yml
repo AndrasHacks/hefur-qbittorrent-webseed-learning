@@ -1,0 +1,24 @@
+version: "3.1"
+
+services:
+  tracker:
+    image: us.gcr.io/ip-kubernetes-dev/image-distribution-tracker:latest
+    command: /usr/bin/hefurd -torrent-dir /var/lib/hefurd -allow-proxy -log-level debug
+    volumes:
+      - ./torrent_files:/var/lib/hefurd
+    ports:
+      - "8300:6969"
+  webseed:
+    image: joseluisq/static-web-server:2
+    ports:
+      - "8301:80"
+    volumes:
+      - ./files:/public
+  client:
+    build:
+      context: .
+      dockerfile: qbittorrent-nox.Dockerfile
+    ports:
+      - "8302:8080"
+    volumes:
+      - ./downloads:/root/downloads
